@@ -1,0 +1,119 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  test-1D-Nozzle:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a set of commands using the runners shell
+      - name: Compile
+        run: |
+          sudo apt-get install -y libboost-all-dev
+          cd ${GITHUB_WORKSPACE}/"1D Nozzle with SIMPLE (Versteeg example 6.2)"
+          git clone https://github.com/ddemidov/amgcl.git
+          cd amgcl
+          git checkout 1.4.2
+          cd ..
+          g++ main.cpp -lm -fopenmp -I./amgcl -O3
+      - name : Run
+        run: |
+          cd ${GITHUB_WORKSPACE}/"1D Nozzle with SIMPLE (Versteeg example 6.2)"
+          ./a.out
+          
+  test-2D-Artificial-Compressibility:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2  
+      - name: Compile
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with Artificial Compressibility Method"
+          gcc main.c -lm -fopenmp -O3
+      - name: Run
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with Artificial Compressibility Method"
+          ./a.out
+          
+  test-2D-Explicit-Projection:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2  
+      - name: Compile
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with Explicit Projection Method"
+          gcc main.c -lm -fopenmp -O3
+      - name: Run
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with Explicit Projection Method"
+          ./a.out
+
+  test-2D-Lattice-Boltzmann:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2  
+      - name: Compile
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with Lattice Boltzmann Method"
+          g++ main.cpp -lm -fopenmp -O3
+          
+  test-2D-Immersed-Boundary:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2  
+      - name: Compile
+        run: |
+          cd ${GITHUB_WORKSPACE}/"2D Lid-driven Cavity with immersed cylinder, with Immersed Boundary Lattice Boltzmann Method"
+          git clone https://gitlab.com/libeigen/eigen.git
+          cd eigen
+          git checkout 3.4
+          cd ..
+          g++ main.cpp -lm -fopenmp -O3 -I./eigen
+          
+  test-3D-Lattice-Boltzmann:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2  
+      - name: Compile
+        run: |
+          cd ${GITHUB_WORKSPACE}/"3D Lid-driven Cavity with Lattice Boltzmann Method"
+          gcc main.c -lm -fopenmp -O3
+
