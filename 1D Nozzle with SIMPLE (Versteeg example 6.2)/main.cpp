@@ -1,5 +1,5 @@
-//	Steady 1D Nozzle using SIMPLE and SIMPLER, upwind differencing
-//	See Versteeg, An Introduction to Computational Fluid Dynamics, Example 6.2
+// 	Steady 1D Nozzle using SIMPLE and SIMPLER, upwind differencing
+// 	See Versteeg, An Introduction to Computational Fluid Dynamics, Example 6.2
 //  Travis Burrows
 
 #include <iostream>
@@ -74,16 +74,16 @@ typedef array<double, Nm1>  Uvec;     //  1D vector of doubles for velocity
 
 //  Function Declarations
 template<std::size_t SIZE>
-inline void         printMatrix         (const string &name, const array<double,SIZE> &vec);
+inline void         printMatrix         (const string &name, const array<double, SIZE> &vec);
 inline double       P2                  (const double &value);
-inline void         calcuHat            (const int &i,Uvec &uHat,const Pvec &p,const Uvec &areaU, const Pvec &areaP,double &UE, double &UW, double &UP, double &d);
+inline void         calcuHat            (const int &i, Uvec &uHat, const Pvec &p, const Uvec &areaU, const Pvec &areaP, double &UE, double &UW, double &UP, double &d);
 inline double       Pexact              (const double &area);
 inline double       Uexact              (const double &area);
-inline void         poisson             (const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Pvec &aWp,const Pvec &aEp,const Pvec &aPp,const Pvec &bPrime,const int &mode = 0, const double &P0 = 0);
-inline void         momentum            (const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Uvec &aWu,const Uvec &aEu,const Uvec &aPu,const Uvec &Su);
+inline void         poisson             (const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Pvec &aWp, const Pvec &aEp, const Pvec &aPp, const Pvec &bPrime, const int &mode = 0, const double &P0 = 0);
+inline void         momentum            (const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Uvec &aWu, const Uvec &aEu, const Uvec &aPu, const Uvec &Su);
 inline void         buildMomentumCoeffs (const Pvec &p, const Pvec &areaP, const Uvec &uPrev, const Uvec &areaU, Uvec &Su, Uvec &aPu, Uvec &aWu, Uvec &aEu, Uvec &aPuinv, Uvec &d);
 inline void         buildPressureCoeffs (Pvec &aWp, Pvec &aEp, Pvec &aPp, Pvec &aPpinv, Pvec &bPrimep, const Uvec &d, const Uvec &usource, const Uvec &areaU);
-inline void         solnError           (double &perror, double &uerror,const Pvec &p, const Pvec &pexact,const Uvec &u, const Uvec &uexact);
+inline void         solnError           (double &perror, double &uerror, const Pvec &p, const Pvec &pexact, const Uvec &u, const Uvec &uexact);
 inline void         throwError          (const string &message);
 inline void         checkparams         ();
 
@@ -93,16 +93,16 @@ int main() {
     checkparams();
 
     //  Declare variables
-    Pvec xP{},areaP{},p{},pPrime{},aWp{},aEp{},aPp{},aPpinv{},bPrimep{},pPrev{},Pexsoln{};
-    Uvec xU{},areaU{},u{},uStar{},d{},mfr{},Su{},uPrev{},Uexsoln{},uHat{},aPu{},aEu{},aWu{},aPuinv{};
-    double dif{},UP{},UE{},UW{},temp{},PP{},totaldif{},totaldif0{},start{},stop{},uError{},pError{};
-    int Mcount{},Pcount{},Pprimecount{};
+    Pvec xP{}, areaP{}, p{}, pPrime{}, aWp{}, aEp{}, aPp{}, aPpinv{}, bPrimep{}, pPrev{}, Pexsoln{};
+    Uvec xU{}, areaU{}, u{}, uStar{}, d{}, mfr{}, Su{}, uPrev{}, Uexsoln{}, uHat{}, aPu{}, aEu{}, aWu{}, aPuinv{};
+    double dif{}, UP{}, UE{}, UW{}, temp{}, PP{}, totaldif{}, totaldif0{}, start{}, stop{}, uError{}, pError{};
+    int Mcount{}, Pcount{}, Pprimecount{};
 
     //  Declare AMGCL-specific variables
 #if defined(USE_AMGCL)
     double amgerror{};
-    vector<int> ptr{},col{};
-    vector <double> val{},rhs2{};
+    vector<int> ptr{}, col{};
+    vector <double> val{}, rhs2{};
     vector <double> x(N, 0.0);
 
     //  Define backend
@@ -126,9 +126,9 @@ int main() {
     omp_set_num_threads(maxthreads);
 
     //  Print some parameters
-    printf("Threads: %d\n",maxthreads);
-    printf("dx: %.2e\n",dx);
-    printf("N: %d\n",N);
+    printf("Threads: %d\n", maxthreads);
+    printf("dx: %.2e\n", dx);
+    printf("N: %d\n", N);
     cout << endl;
 
     //  Initialize Variables
@@ -149,11 +149,11 @@ int main() {
     }
 
     if (DEBUG) {
-        printMatrix("xP",xP);
-        printMatrix("areaP",areaP);
-        printMatrix("areaU",areaU);
-        printMatrix("u",u);
-        printMatrix("p",p);
+        printMatrix("xP", xP);
+        printMatrix("areaP", areaP);
+        printMatrix("areaU", areaU);
+        printMatrix("u", u);
+        printMatrix("p", p);
     }
 
     if (METHOD == 0)
@@ -185,16 +185,16 @@ int main() {
             }
 
             //  build vector of coefficients for pressure equation
-            buildPressureCoeffs(aWp,aEp,aPp,aPpinv,bPrimep,d,uHat,areaU);
+            buildPressureCoeffs(aWp, aEp, aPp, aPpinv, bPrimep, d, uHat, areaU);
 
             //  solve pressure equation
 #if defined(USE_AMGCL)
             PP = p[0];      //  Keep first pressure value from previous iteration (boundary condition)
-            poisson(N,ptr,col,val,rhs2,aWp,aEp,aPp,bPrimep,1,PP);   //  build AMGCL matrices
+            poisson(N, ptr, col, val, rhs2, aWp, aEp, aPp, bPrimep, 1, PP);   //  build AMGCL matrices
             Solver solveP( std::tie(N, ptr, col, val));             //  define solver
             x.clear();x.reserve(N);
             std::tie(Pcount, amgerror) = solveP(rhs2, x);           //  solve
-            copy_n(x.begin(),N,p.begin());                          //  copy solution to pressure array
+            copy_n(x.begin(), N, p.begin());                          //  copy solution to pressure array
 #else
             dif = 1.0;
             Pcount = 0;
@@ -220,24 +220,24 @@ int main() {
             }
 #endif
         }
-        
+
         //  Solve momentum equation for u*
         Mcount = 0;
         uStar = u;
-        buildMomentumCoeffs(p,areaP,uPrev,areaU,Su,aPu,aWu,aEu,aPuinv,d);    //  build momentum coefficients
+        buildMomentumCoeffs(p, areaP, uPrev, areaU, Su, aPu, aWu, aEu, aPuinv, d);    //  build momentum coefficients
 
 #if defined(USE_AMGCL)
-        momentum(Nm1,ptr,col,val,rhs2,aWu,aEu,aPu,Su);   //  build AMGCL matrices
+        momentum(Nm1, ptr, col, val, rhs2, aWu, aEu, aPu, Su);   //  build AMGCL matrices
         Solver solveM( std::tie(Nm1, ptr, col, val));       //  define momentum solver
         x.clear();x.reserve(Nm1);
         std::tie(Mcount, amgerror) = solveM(rhs2, x);       //  solve
-        copy_n(x.begin(),Nm1,uStar.begin());                //  copy solution to uStar
+        copy_n(x.begin(), Nm1, uStar.begin());                //  copy solution to uStar
 #else
         //  Iterate until uStar converges
         dif = 1.0;
         while (dif > THRESHinner) {
             dif = 0.0;
-#pragma omp parallel for private(UP,UE,UW,temp,rhs) reduction(+:dif)
+#pragma omp parallel for private(UP, UE, UW, temp, rhs) reduction(+:dif)
             for (int i = 0; i < Nm1; i++) {
                 UP = uStar[i];
                 switch (i) {
@@ -280,21 +280,21 @@ int main() {
         pPrime[Nm1] = 0.0;
         dif = 1.0;
         Pprimecount = 0;
-        
+
         //  build vector of coefficients
-        buildPressureCoeffs(aWp,aEp,aPp,aPpinv,bPrimep,d,uStar,areaU);
+        buildPressureCoeffs(aWp, aEp, aPp, aPpinv, bPrimep, d, uStar, areaU);
 
 #if defined(USE_AMGCL)
-        poisson(N,ptr,col,val,rhs2,aWp,aEp,aPp,bPrimep,0);          //  build AMGCL matrices
+        poisson(N, ptr, col, val, rhs2, aWp, aEp, aPp, bPrimep, 0);          //  build AMGCL matrices
         Solver solvePprime( std::tie(N, ptr, col, val));            //  define solver
         x.clear();x.reserve(N);
         std::tie(Pprimecount, amgerror) = solvePprime(rhs2, x);     //  solve
-        copy_n(x.begin(),N,pPrime.begin());                         //  copy solution to pprime
+        copy_n(x.begin(), N, pPrime.begin());                         //  copy solution to pprime
 #else
         //  Iterate until P' converges
         while (dif > THRESHinner) {
             dif = 0.0;
-#pragma omp parallel for private(temp,PP,rhs) reduction(+:dif)
+#pragma omp parallel for private(temp, PP, rhs) reduction(+:dif)
             for (int i = 1; i < Nm1; i++) {
                 temp = pPrime[i];
                 rhs = aWp[i] * pPrime[i - 1] + aEp[i] * pPrime[i + 1] + bPrimep[i];
@@ -315,7 +315,7 @@ int main() {
 
         //  Correct pressure and velocity
         totaldif = 0.0;
-#pragma omp parallel for private(PP,UP,temp) reduction(+:totaldif)
+#pragma omp parallel for private(PP, UP, temp) reduction(+:totaldif)
         for (int i = 0; i < Nm1; i++) {
 
             //  Correct all velocities
@@ -351,11 +351,11 @@ int main() {
         if (outer % printint == 0) {
 
             //  Calculate error from exact solution
-            solnError(pError,uError,p,Pexsoln, u,Uexsoln);
+            solnError(pError, uError, p, Pexsoln, u, Uexsoln);
             if (METHOD == 0)
-                printf("%.2e\t%.2e\t%.2e\t%.2e\t%.3e\t%.3e\t\n",(double) outer,(double) Mcount,(double) Pprimecount,totaldif,pError,uError);
+                printf("%.2e\t%.2e\t%.2e\t%.2e\t%.3e\t%.3e\t\n", (double) outer, (double) Mcount, (double) Pprimecount, totaldif, pError, uError);
             else if (METHOD == 1)
-                printf("%.2e\t%.2e\t%.2e\t%.2e\t%.3e\t%.3e\t%.3e\n",(double) outer,(double) Pcount ,(double) Mcount,(double) Pprimecount,totaldif,pError,uError);
+                printf("%.2e\t%.2e\t%.2e\t%.2e\t%.3e\t%.3e\t%.3e\n", (double) outer, (double) Pcount , (double) Mcount, (double) Pprimecount, totaldif, pError, uError);
 
             //  If converged, print final information
             if (totaldif < THRESH) {
@@ -371,7 +371,7 @@ int main() {
                 if (METHOD == 1)
                     printMatrix("uHat", uHat);
                 printMatrix("p", p);
-                printf("\nTime: %.3e s",stop - start);
+                printf("\nTime: %.3e s", stop - start);
                 break;
             }
         }
@@ -388,7 +388,7 @@ inline double P2(const double &value) {
 
 //  Prints a matrix
 template<std::size_t SIZE>
-inline void printMatrix(const string &name, const array<double, SIZE> &vec){
+inline void printMatrix(const string &name, const array<double, SIZE> &vec) {
     printf("\n%s:\n", name.c_str());
     for (size_t i = 0; i < SIZE; i++)
         printf("%.4f\t", vec[i]);
@@ -396,8 +396,8 @@ inline void printMatrix(const string &name, const array<double, SIZE> &vec){
 }
 
 //  Calculates u-hat for SIMPLER
-inline void calcuHat(const int &i,Uvec &uHat,const Pvec &p,const Uvec &areaU, const Pvec &areaP,double &UE, double &UW, double &UP, double &d){
-    double Fw{},Fe{},Aw{},Ae{},aW{},aE{},aP{},Su{},b{};
+inline void calcuHat(const int &i, Uvec &uHat, const Pvec &p, const Uvec &areaU, const Pvec &areaP, double &UE, double &UW, double &UP, double &d) {
+    double Fw{}, Fe{}, Aw{}, Ae{}, aW{}, aE{}, aP{}, Su{}, b{};
     switch (i) {
 
         //  Left boundary
@@ -445,9 +445,9 @@ inline void calcuHat(const int &i,Uvec &uHat,const Pvec &p,const Uvec &areaU, co
 }
 
 //  Calculates solution error
-inline void solnError(double &perror, double &uerror,const Pvec &p, const Pvec &pexact,const Uvec &u, const Uvec &uexact) {
+inline void solnError(double &perror, double &uerror, const Pvec &p, const Pvec &pexact, const Uvec &u, const Uvec &uexact) {
     perror = 0.0; uerror = 0.0;
-#pragma omp parallel for reduction(+:perror,uerror)
+#pragma omp parallel for reduction(+:perror, uerror)
     for (int i = 0; i < N; i++) {
         perror += P2(p[i] - pexact[i]);
         if (i < Nm1)
@@ -458,17 +458,17 @@ inline void solnError(double &perror, double &uerror,const Pvec &p, const Pvec &
 }
 
 //  Exact solution for pressure
-inline double Pexact(const double &area){
+inline double Pexact(const double &area) {
     return 10.0 - 0.5 * P2(Mexact) / P2(area);
 }
 
 //  Exact solution for velocity
-inline double Uexact(const double &area){
+inline double Uexact(const double &area) {
     return Mexact / area;
 }
 
 // Assembles matrix for pressure equation
-inline void poisson(const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Pvec &aWp,const Pvec &aEp,const Pvec &aPp,const Pvec &bPrime,const int &mode, const double &P0) {
+inline void poisson(const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Pvec &aWp, const Pvec &aEp, const Pvec &aPp, const Pvec &bPrime, const int &mode, const double &P0) {
     ptr.clear(); ptr.reserve(n + 1); ptr.push_back(0);
     col.clear(); col.reserve(n * 3);
     val.clear(); val.reserve(n * 3);
@@ -480,7 +480,7 @@ inline void poisson(const int &n, vector<int> &ptr, vector<int> &col, vector<dou
             val.push_back(1.0);
             rhs[i] = 0.0;
         }
-        else if (mode == 1 && i == n-1){
+        else if (mode == 1 && i == n-1) {
             col.push_back(i);
             val.push_back(1.0);
             rhs[i] = 0.0;
@@ -506,7 +506,7 @@ inline void poisson(const int &n, vector<int> &ptr, vector<int> &col, vector<dou
     }
 }
 
-inline void momentum(const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Uvec &aWu,const Uvec &aEu,const Uvec &aPu,const Uvec &Su) {
+inline void momentum(const int &n, vector<int> &ptr, vector<int> &col, vector<double> &val, vector<double> &rhs, const Uvec &aWu, const Uvec &aEu, const Uvec &aPu, const Uvec &Su) {
     ptr.clear(); ptr.reserve(n + 1); ptr.push_back(0);
     col.clear(); col.reserve(n * 3);
     val.clear(); val.reserve(n * 3);
@@ -540,9 +540,9 @@ inline void momentum(const int &n, vector<int> &ptr, vector<int> &col, vector<do
 
 
 //  Build Momentum coefficient vectors
-inline void buildMomentumCoeffs(const Pvec &p, const Pvec &areaP, const Uvec &uPrev, const Uvec &areaU, Uvec &Su, Uvec &aPu, Uvec &aWu, Uvec &aEu, Uvec &aPuinv, Uvec &d){
-    double UP{},UE{},UW{},Aw{},Ae{},Fw{},Fe{},Pe{},Pw{},Vol{},dPdx{};
-#pragma omp parallel for private(UP,UE,UW,Aw,Ae,Fw,Fe,Pe,Pw,Vol,dPdx)
+inline void buildMomentumCoeffs(const Pvec &p, const Pvec &areaP, const Uvec &uPrev, const Uvec &areaU, Uvec &Su, Uvec &aPu, Uvec &aWu, Uvec &aEu, Uvec &aPuinv, Uvec &d) {
+    double UP{}, UE{}, UW{}, Aw{}, Ae{}, Fw{}, Fe{}, Pe{}, Pw{}, Vol{}, dPdx{};
+#pragma omp parallel for private(UP, UE, UW, Aw, Ae, Fw, Fe, Pe, Pw, Vol, dPdx)
     for (int i = 0; i < Nm1; i++) {
         //  Cell-face pressures
         if (i == 0)
@@ -607,9 +607,9 @@ inline void buildMomentumCoeffs(const Pvec &p, const Pvec &areaP, const Uvec &uP
 }
 
 //  build vector of pressure coefficients
-inline void buildPressureCoeffs(Pvec &aWp, Pvec &aEp, Pvec &aPp, Pvec &aPpinv, Pvec &bPrimep, const Uvec &d, const Uvec &usource, const Uvec &areaU){
-    double Fw{},Fe{};
-#pragma omp parallel for private(Fw,Fe)
+inline void buildPressureCoeffs(Pvec &aWp, Pvec &aEp, Pvec &aPp, Pvec &aPpinv, Pvec &bPrimep, const Uvec &d, const Uvec &usource, const Uvec &areaU) {
+    double Fw{}, Fe{};
+#pragma omp parallel for private(Fw, Fe)
     for (int i = 1; i < Nm1; i++) {
         aWp[i] = d[i - 1] * areaU[i - 1];
         aEp[i] = d[i] * areaU[i];
@@ -623,7 +623,7 @@ inline void buildPressureCoeffs(Pvec &aWp, Pvec &aEp, Pvec &aPp, Pvec &aPpinv, P
 }
 
 //  Check for valid parameter values
-inline void checkparams(){
+inline void checkparams() {
     if (N < 3)
         throwError("Error: invalid grid size.  Pick N > 2\n");
 
